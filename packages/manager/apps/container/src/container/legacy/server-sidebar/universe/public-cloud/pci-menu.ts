@@ -282,6 +282,18 @@ export function getPciProjectMenu(
           }[region],
           external: true,
         },
+        {
+          id: 'warehouse',
+          badge: 'beta',
+          title: 'DataWarehouse',
+          feature: 'horizon',
+          href: {
+            CA: 'https://poc.datatransverse.ovh/login/',
+            EU: 'https://poc.datatransverse.ovh/login/',
+            US: 'https://poc.datatransverse.ovh/login/',
+          }[region],
+          external: true,
+        },
       ],
     },
     {
