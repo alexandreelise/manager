@@ -151,5 +151,9 @@
   "sidebar_telephony_type_sipTrunk": "Trunk",
   "sidebar_telephony_type_sip": "SIP",
   "sidebar_telephony_type_fax": "Fax",
-  "sidebar_pci_volume_backup": "Volume Backup"
+  "sidebar_pci_volume_backup": "Volume Backup",
+  "sidebar_description": "Menu dei miei servizi",
+  "sidebar_load_services": "Caricare i servizi",
+  "sidebar_access_list": "Accedere alla lista",
+  "sidebar_access_dashboard": "Accedere alla dashboard"
 }
