@@ -22,6 +22,7 @@ const ENTITY = {
   POLICY: 'policy',
   IDENTITY: 'identity',
   RESOURCE_GROUP: 'resourceGroup',
+  RESOURCE_TYPE: 'resourceType',
 };
 const URN_VERSION = 1;
 
