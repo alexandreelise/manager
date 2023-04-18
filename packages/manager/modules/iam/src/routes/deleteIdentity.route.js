@@ -1,24 +1,9 @@
-import { deleteEntity as deleteEntityComponent } from '@iam/components';
-import {
-  asPath,
-  asResolve,
-  noBreadcrumbResolve,
-  identityParamResolve,
-} from '@iam/resolves';
-
-const name = 'deleteIdentity';
-const resolves = [noBreadcrumbResolve, identityParamResolve];
-
-const state = () => ({
-  url: `/delete/${asPath(identityParamResolve)}`,
-  component: deleteEntityComponent.name,
-  resolve: {
-    ...asResolve(deleteEntityComponent.resolves),
-    ...asResolve(resolves),
-  },
-});
+import { deleteEntity as component } from '@iam/components';
+import { identityParamResolve as identity } from '@iam/resolves';
 
 export default {
-  name,
-  state,
+  component,
+  name: 'deleteIdentity',
+  resolves: [identity],
+  url: `/delete/${identity.toTypeString()}`,
 };

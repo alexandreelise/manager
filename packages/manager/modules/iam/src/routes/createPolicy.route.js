@@ -1,19 +1,9 @@
-import { createPolicy } from '@iam/components';
-import { asResolve, createPolicyBreadcrumbResolve } from '@iam/resolves';
-
-const name = 'createPolicy';
-const resolves = [createPolicyBreadcrumbResolve];
-
-const state = () => ({
-  url: '/policy/create',
-  component: createPolicy.name,
-  resolve: {
-    ...asResolve(createPolicy.resolves),
-    ...asResolve(resolves),
-  },
-});
+import { createPolicy as component } from '@iam/components';
+import { createPolicyBreadcrumbResolve as breadcrumb } from '@iam/resolves';
 
 export default {
-  name,
-  state,
+  breadcrumb,
+  component,
+  name: 'createPolicy',
+  url: '/policy/create',
 };

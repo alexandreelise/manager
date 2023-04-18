@@ -1,32 +1,26 @@
-import { iam as iamComponent } from '@iam/components';
 import { FEATURE, UNAVAILABLE_STATE_NAME } from '@iam/constants';
+import { iam as component } from '@iam/components';
 import {
-  asResolve,
-  featuresResolve,
-  defaultBreadcrumbResolve,
+  featuresResolve as features,
+  defaultBreadcrumbResolve as breadcrumb,
 } from '@iam/resolves';
 
-const name = 'iam';
-const resolves = [featuresResolve, defaultBreadcrumbResolve];
-
-const state = ({ ROUTES }) => ({
-  url: '/iam',
-  component: iamComponent.name,
-  redirectTo: (transition) =>
-    transition
+export default {
+  breadcrumb,
+  component,
+  name: 'iam',
+  redirectTo: (transition) => {
+    const injector = transition.injector();
+    const IAMRoutes = injector.get('IAMRoutes');
+    return transition
       .injector()
-      .getAsync(featuresResolve.key)
+      .getAsync(`${features}`)
       .then((featureAvailabilityResult) =>
         featureAvailabilityResult.isFeatureAvailable(FEATURE.MAIN)
-          ? ROUTES.POLICY
+          ? IAMRoutes.POLICY
           : { state: UNAVAILABLE_STATE_NAME },
-      ),
-  resolve: {
-    ...asResolve(resolves),
+      );
   },
-});
-
-export default {
-  name,
-  state,
+  resolves: [features],
+  url: '/iam',
 };

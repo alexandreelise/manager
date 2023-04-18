@@ -1,13 +1,18 @@
-import { asBindings } from '@iam/resolves';
+import {
+  alertResolve as alert,
+  goBackResolve as goBack,
+  goToResolve as goTo,
+  onboardingGuidesResolve as onboardingGuides,
+  policyParamResolve as policy,
+  reloadResolve as reload,
+} from '@iam/resolves';
 
 import controller from './policyIdentities.controller';
-import resolves from './policyIdentities.resolves';
 import template from './policyIdentities.template.html';
 
 export default {
-  bindings: {
-    ...asBindings(resolves),
-  },
+  name: 'iamPolicyIdentities',
+  resolves: [alert, goBack, goTo, onboardingGuides, policy, reload],
   controller,
   template,
 };

@@ -8,21 +8,21 @@
                 data-secondary-label="{{:: 'iam_delete_entity_secondary_label' | translate }}"
                 data-secondary-action=":: $ctrl.close()"
                 data-on-dismiss=":: $ctrl.close()"
-                data-heading="{{:: $ctrl.translate.heading | translate }}"
+                data-heading="{{:: $ctrl.translations.heading | translate }}"
                 data-type="warning"
                 data-loading="$ctrl.isDeleting"
                 data-ng-mouseup="$event.stopPropagation()"
             >
                 <p
-                    data-translate="{{:: $ctrl.translate.warn | translate }}"
+                    data-translate="{{:: $ctrl.translations.warn | translate }}"
                 ></p>
                 <span
                     class="d-block"
-                    data-translate="{{:: $ctrl.translate.name | translate }}"
+                    data-translate="{{:: $ctrl.translations.name | translate }}"
                 ></span>
                 <strong
                     class="d-block"
-                    data-ng-bind=":: $ctrl.entity.data.name"
+                    data-ng-bind=":: $ctrl.name"
                 ></strong>
                 <div data-ng-transclude></div>
                 <form
@@ -31,7 +31,7 @@
                     data-ng-submit="$ctrl.delete()"
                 >
                     <oui-field
-                        data-label="{{:: $ctrl.translate.field | translate: { statement: $root.IAM.DELETE_STATEMENT } }}"
+                        data-label="{{:: $ctrl.translations.field | translate: { statement: $root.IAM.DELETE_STATEMENT } }}"
                         data-ng-if="$ctrl.statement"
                     >
                         <input

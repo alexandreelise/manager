@@ -7,7 +7,9 @@ import * as constants from './constants';
  * @param {RootScope} $rootScope
  */
 const assignConstants = /* @ngInject */ ($rootScope) =>
-  Object.assign($rootScope, { IAM: { ...$rootScope.IAM, ...constants } });
+  Object.assign($rootScope, {
+    [constants.ROOTSCOPE_NS]: { ...[constants.ROOTSCOPE_NS], ...constants },
+  });
 
 const moduleName = 'ovhManagerIAMConstants';
 

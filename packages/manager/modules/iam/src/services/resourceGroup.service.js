@@ -9,13 +9,15 @@ export default class ResourceGroupService {
   }
 
   /**
-   * Get the list of resourceGroups
-   * @param {string} cursor The base64 encoded cursor to pass
-   * @see Apiv2Service#getList
+   * Delete the resourceGroup given the id
+   * @param {string} id The resourceGroup's id
+   * @see Apiv2Service#delete
    * @returns {Promise}
    */
-  getResourceGroups({ cursor }) {
-    return this.Apiv2Service.getList(ENDPOINT.resourceGroup, { cursor });
+  deleteResourceGroup(id) {
+    return this.Apiv2Service.delete(`${ENDPOINT.resourceGroup}/${id}`).then(
+      ({ data }) => data,
+    );
   }
 
   /**
@@ -31,14 +33,12 @@ export default class ResourceGroupService {
   }
 
   /**
-   * Delete the resourceGroup given the id
-   * @param {string} id The resourceGroup's id
-   * @see Apiv2Service#delete
+   * Get the list of resourceGroups
+   * @param {string} cursor The base64 encoded cursor to pass
+   * @see Apiv2Service#getList
    * @returns {Promise}
    */
-  deleteResourceGroup(id) {
-    return this.Apiv2Service.delete(`${ENDPOINT.resourceGroup}/${id}`).then(
-      ({ data }) => data,
-    );
+  getResourceGroups({ cursor }) {
+    return this.Apiv2Service.getList(ENDPOINT.resourceGroup, { cursor });
   }
 }

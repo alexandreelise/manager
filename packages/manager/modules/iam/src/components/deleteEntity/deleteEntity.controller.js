@@ -1,11 +1,10 @@
 import { DELETE_STATEMENT, ENTITY } from '@iam/constants';
-import { encodeUrn } from '@iam/resolves';
+import { encodeUrn, entityResolve as entity } from '@iam/resolves';
 
 export default class DeleteEntityController {
   /* @ngInject */
-  constructor($q, $stateParams, PolicyService, ResourceGroupService) {
+  constructor($q, PolicyService, ResourceGroupService) {
     this.$q = $q;
-    this.$stateParams = $stateParams;
     this.PolicyService = PolicyService;
     this.ResourceGroupService = ResourceGroupService;
 
@@ -37,24 +36,30 @@ export default class DeleteEntityController {
   }
 
   /**
-   * A contextualized Set where each key map to a translation
-   * @returns {{
-   *   field: string,
-   *   error: string,
-   *   heading: string,
-   *   name: string,
-   *   success: string,
-   *   warn: string,
-   * }}
+   * The displayed name depends on the type of the entity
+   * @returns {string}
    */
-  get translate() {
+  get name() {
+    const { data, type } = this[entity];
+    if (type === ENTITY.IDENTITY) {
+      return [...data.identity.components].pop();
+    }
+    return data.name;
+  }
+
+  /**
+   * A contextualized Set where each key map to a translation
+   * @returns {Object}
+   */
+  get translations() {
+    const { type } = this[entity];
     return {
-      field: `iam_delete_entity_${this.entity.type}_field`,
-      error: `iam_delete_entity_${this.entity.type}_error`,
-      heading: `iam_delete_entity_${this.entity.type}_heading`,
-      name: `iam_delete_entity_${this.entity.type}_name`,
-      success: `iam_delete_entity_${this.entity.type}_success`,
-      warn: `iam_delete_entity_${this.entity.type}_warn`,
+      error: `iam_delete_entity_${type}_error`,
+      field: `iam_delete_entity_${type}_field`,
+      heading: `iam_delete_entity_${type}_heading`,
+      name: `iam_delete_entity_${type}_name`,
+      success: `iam_delete_entity_${type}_success`,
+      warn: `iam_delete_entity_${type}_warn`,
     };
   }
 
@@ -63,7 +68,7 @@ export default class DeleteEntityController {
    * @returns {Promise}
    */
   close() {
-    return this.goBack({ params: this.$stateParams });
+    return this.goBack({ params: true });
   }
 
   /**
@@ -71,13 +76,14 @@ export default class DeleteEntityController {
    * @returns {Promise}
    */
   delete() {
+    const { type } = this[entity];
     let promise;
 
-    if (this.entity.type === ENTITY.POLICY) {
-      promise = this.deletePolicy();
-    } else if (this.entity.type === ENTITY.IDENTITY) {
+    if (type === ENTITY.IDENTITY) {
       promise = this.deletePolicyIdentity();
-    } else if (this.entity.type === ENTITY.RESOURCE_GROUP) {
+    } else if (type === ENTITY.POLICY) {
+      promise = this.deletePolicy();
+    } else if (type === ENTITY.RESOURCE_GROUP) {
       promise = this.deleteResourceGroup();
     } else if (this.entity.type === ENTITY.RESOURCE_TYPE) {
       promise = this.$q.when(true);
@@ -87,12 +93,12 @@ export default class DeleteEntityController {
 
     promise
       .then(() =>
-        this.goBack({ success: this.translate.success, reload: true }),
+        this.goBack({ success: this.translations.success, reload: true }),
       )
       .catch((error) => {
         const { message } = error.data ?? {};
         return this.goBack({
-          error: { key: this.translate.error, values: { message } },
+          error: { key: this.translations.error, values: { message } },
         });
       });
 
@@ -106,7 +112,7 @@ export default class DeleteEntityController {
    * @returns {Promise}
    */
   deletePolicy() {
-    return this.PolicyService.deletePolicy(this.entity.data.id);
+    return this.PolicyService.deletePolicy(this[entity].data.id);
   }
 
   /**
@@ -114,7 +120,7 @@ export default class DeleteEntityController {
    * @returns {Promise}
    */
   deletePolicyIdentity() {
-    const { identity, policy } = this.entity.data;
+    const { identity, policy } = this[entity].data;
     const encodedIdentity = encodeUrn(identity);
     return this.PolicyService.editIdentities(
       policy.id,
@@ -127,6 +133,6 @@ export default class DeleteEntityController {
    * @returns {Promise}
    */
   deleteResourceGroup() {
-    return this.ResourceGroupService.deleteResourceGroup(this.entity.data.id);
+    return this.ResourceGroupService.deleteResourceGroup(this[entity].data.id);
   }
 }

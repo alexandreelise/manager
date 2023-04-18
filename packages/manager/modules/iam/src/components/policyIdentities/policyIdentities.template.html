@@ -8,7 +8,7 @@
             data-text="{{:: 'iam_policy_identities_guide_text' | translate }}"
         >
             <oui-guide-menu-item
-                data-ng-repeat="guide in $ctrl.onboardingGuides track by $index"
+                data-ng-repeat="guide in $ctrl.guides track by $index"
                 data-href="{{:: guide.link }}"
                 data-external
             >
@@ -26,7 +26,7 @@
         novalidate
         name="identitiesForm"
         data-ng-if="!$ctrl.loading"
-        data-ng-submit="$ctrl.editIdentitites()"
+        data-ng-submit="$ctrl.editIdentities()"
     >
         <oui-field
             label="{{ 'iam_policy_identities_field_users_selection_label' | translate }}"
@@ -36,18 +36,18 @@
                 <input
                     placeholder="{{ 'iam_policy_identities_field_users_selection_placeholder' | translate }}"
                     class="oui-input oui-input_inline mr-2"
-                    name="usersField"
+                    name="identity"
                     type="text"
-                    data-ng-model="$ctrl.newUser"
-                    data-oui-autocomplete="$ctrl.userList"
+                    data-ng-model="$ctrl.model"
+                    data-oui-autocomplete="$ctrl.suggestions"
                     data-oui-autocomplete-property="userName"
                     data-oui-autocomplete-on-select="$ctrl.suggestion = value"
-                    data-ng-keypress="$ctrl.onUsersFieldKeypress($event)"
+                    data-ng-keypress="$ctrl.onIdentityKeypress($event)"
                 />
                 <button
                     class="oui-button oui-button_secondary oui-button_icon-right"
                     type="submit"
-                    data-ng-disabled="!$ctrl.newUser"
+                    data-ng-disabled="!$ctrl.model"
                 >
                     <span
                         data-translate="iam_policy_identities_field_users_button_add"
@@ -60,12 +60,12 @@
             </div>
             <div class="oui-chip__container">
                 <button
-                    data-ng-repeat="identity in $ctrl.identities track by $index"
+                    data-ng-repeat="chip in $ctrl.chips track by $index"
                     class="oui-chip oui-chip_closable"
                     type="button"
-                    data-ng-click="$ctrl.goToDeleteIdentity(identity.urn)"
+                    data-ng-click="$ctrl.deleteIdentity(chip.urn)"
                 >
-                    <span data-ng-bind="identity.title"></span>
+                    <span data-ng-bind="chip.title"></span>
                     <span
                         class="oui-chip__close oui-icon oui-icon-close"
                     ></span>

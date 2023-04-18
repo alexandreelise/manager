@@ -1,5 +1,10 @@
 import angular from 'angular';
 
+import * as breadcrumbs from './breadcrumbs.resolve';
+import * as guides from './guides.resolve';
+import * as misc from './misc.resolve';
+import * as params from './params.resolve';
+
 import types from './types';
 
 /**
@@ -16,7 +21,7 @@ const castArray = (object) => (Array.isArray(object) ? object : [object]);
  * @returns {Object<string, '<'>}
  */
 const asBindings = (resolves) =>
-  castArray(resolves).reduce((map, res) => ({ ...map, [res.key]: '<' }), {});
+  castArray(resolves).reduce((map, res) => ({ ...map, [res]: '<' }), {});
 
 /**
  * Build a Set where all the keys represent the key property of each resolve function
@@ -29,33 +34,11 @@ const asResolve = (resolves) =>
     (map, res) => ({
       ...map,
       ...asResolve(res.resolves ?? []),
-      [res.key]: res,
+      [res]: res,
     }),
     {},
   );
 
-/**
- * Build a query string with each resolve's key property separated by a "&"
- * @param {Function|Function[]} resolves
- * @returns {string}
- */
-const asQuery = (resolves) =>
-  castArray(resolves)
-    .map(({ key }) => key)
-    .join('&');
-
-/**
- * Build a path with each resolve's key properties and declaration's type (if any)
- * separated by a "/"
- * @param {Function|Function[]} resolves
- * @returns {string}
- */
-const asPath = (resolves) =>
-  castArray(resolves)
-    .map(({ key, declaration: { type } = {} }) =>
-      type ? `{${key}:${type}}` : `:${key}`,
-    )
-    .join('/');
 
 /**
  * Build a Set where all the keys represent the key property of each resolve function
@@ -85,6 +68,30 @@ const registerTypes = /* @ngInject */ ($urlMatcherFactoryProvider) =>
     $urlMatcherFactoryProvider.type(type, definition),
   );
 
+/**
+ * Overwrite the toString method of each resolve
+ * It can be written like this
+ *
+ * { [myResolve]: value }
+ * `/path/to/resource?${myResolve}`
+ *
+ * Augment each resolve with a toTypeString method
+ * It can be written like this in a url
+ *
+ * Input  `/path/to/${myResolve.toTypeString()}/delete`
+ * Output `/path/to/{myResolve:type}/delete` // if type is declared
+ * Output `/path/to/:myResolve/delete` // if no type is declared
+ */
+[breadcrumbs, guides, misc, params].forEach((resolves) => {
+  Object.values(resolves).forEach((resolve) => {
+    const { key, declaration: { type } = {} } = resolve;
+    Object.assign(resolve, {
+      toString: () => key,
+      toTypeString: () => (type ? `{${key}:${type}}` : `:${key}`),
+    });
+  });
+});
+
 const moduleName = 'ovhManagerIAMResolves';
 
 angular
@@ -97,5 +104,5 @@ export * from './guides.resolve';
 export * from './misc.resolve';
 export * from './params.resolve';
 export * from './types';
-export { asBindings, asResolve, asQuery, asPath, asParams };
+export { asBindings, asResolve, asParams };
 export default moduleName;

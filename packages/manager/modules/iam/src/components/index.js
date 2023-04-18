@@ -1,105 +1,57 @@
 import angular from 'angular';
 
-import actionSelectComponent from './actionSelect/actionSelect.component';
-import createPolicyComponent from './createPolicy/createPolicy.component';
-import createPolicyResolves from './createPolicy/createPolicy.resolves';
-import deleteEntityComponent from './deleteEntity/deleteEntity.component';
-import deleteEntityResolves from './deleteEntity/deleteEntity.resolves';
-import iamComponent from './iam/iam.component';
-import onboardingComponent from './onboarding/onboarding.component';
-import onboardingResolves from './onboarding/onboarding.resolves';
-import policyIdentitiesComponent from './policyIdentities/policyIdentities.component';
-import policyIdentitiesResolves from './policyIdentities/policyIdentities.resolves';
-import policiesComponent from './policies/policies.component';
-import policiesResolves from './policies/policies.resolves';
-import policyComponent from './policy/policy.component';
-import policyResolves from './policy/policy.resolves';
-import resourceGroupsComponent from './resourceGroups/resourceGroups.component';
-import resourceGroupsResolves from './resourceGroups/resourceGroups.resolves';
-import resourceSelectComponent from './resourceSelect/resourceSelect.component';
+import resolvesModuleName, { asBindings } from '@iam/resolves';
 
-import highlightTextDirective from './highlightText/highlightText.directive';
+import actionSelect from './actionSelect/actionSelect.component';
+import createPolicy from './createPolicy/createPolicy.component';
+import deleteEntity from './deleteEntity/deleteEntity.component';
+import iam from './iam/iam.component';
+import onboarding from './onboarding/onboarding.component';
+import policies from './policies/policies.component';
+import policy from './policy/policy.component';
+import policyIdentities from './policyIdentities/policyIdentities.component';
+import resourceGroups from './resourceGroups/resourceGroups.component';
+import resourceSelect from './resourceSelect/resourceSelect.component';
 
-const actionSelect = {
-  name: 'iamActionSelect',
-  component: actionSelectComponent,
-  resolves: null,
-};
+import highlightText from './highlightText/highlightText.directive';
 
-const createPolicy = {
-  name: 'iamCreatePolicy',
-  component: createPolicyComponent,
-  resolves: createPolicyResolves,
-};
-
-const deleteEntity = {
-  name: 'iamDeleteEntity',
-  component: deleteEntityComponent,
-  resolves: deleteEntityResolves,
-};
-
-const iam = {
-  name: 'iam',
-  component: iamComponent,
-  resolves: null,
-};
-
-const onboarding = {
-  name: 'iamOnboarding',
-  component: onboardingComponent,
-  resolves: onboardingResolves,
-};
-
-const policyIdentities = {
-  name: 'policyIdentities',
-  component: policyIdentitiesComponent,
-  resolves: policyIdentitiesResolves,
-};
-
-const policies = {
-  name: 'iamPolicies',
-  component: policiesComponent,
-  resolves: policiesResolves,
-};
-
-const policy = {
-  name: 'iamPolicy',
-  component: policyComponent,
-  resolves: policyResolves,
-};
-
-const resourceGroups = {
-  name: 'iamResourceGroups',
-  component: resourceGroupsComponent,
-  resolves: resourceGroupsResolves,
-};
-
-const resourceSelect = {
-  name: 'iamResourceSelect',
-  component: resourceSelectComponent,
-  resolves: null,
-};
-
-const highlightText = {
-  name: 'iamHighlightText',
-  directive: highlightTextDirective,
-};
+[
+  actionSelect,
+  createPolicy,
+  deleteEntity,
+  iam,
+  onboarding,
+  policies,
+  policy,
+  policyIdentities,
+  resourceGroups,
+  resourceSelect,
+]
+  .filter((component) => Boolean(component.resolves?.length))
+  .forEach((component) =>
+    Object.assign(component, {
+      bindings: {
+        ...asBindings(component.resolves),
+        ...component.bindings,
+      },
+    }),
+  );
 
 const moduleName = 'ovhManagerIAMComponents';
 
 angular
-  .module(moduleName, [])
-  .component(actionSelect.name, actionSelect.component)
-  .component(createPolicy.name, createPolicy.component)
-  .component(deleteEntity.name, deleteEntity.component)
-  .component(iam.name, iam.component)
-  .component(onboarding.name, onboarding.component)
-  .component(policyIdentities.name, policyIdentities.component)
-  .component(policies.name, policies.component)
-  .component(policy.name, policy.component)
-  .component(resourceGroups.name, resourceGroups.component)
-  .component(resourceSelect.name, resourceSelect.component)
-  .directive(highlightText.name, highlightText.directive)
+  .module(moduleName, [resolvesModuleName])
+  .component(actionSelect.name, actionSelect)
+  .component(createPolicy.name, createPolicy)
+  .component(deleteEntity.name, deleteEntity)
+  .component(iam.name, iam)
+  .component(onboarding.name, onboarding)
+  .component(policyIdentities.name, policyIdentities)
+  .component(policies.name, policies)
+  .component(policy.name, policy)
+  .component(resourceGroups.name, resourceGroups)
+  .component(resourceSelect.name, resourceSelect)
+  .directive(highlightText.name, highlightText)
   .run(/*
     @ngTranslationsInject:json
       ./actionSelect/translations
@@ -125,5 +77,4 @@ export {
   policy,
   resourceGroups,
 };
-
 export default moduleName;

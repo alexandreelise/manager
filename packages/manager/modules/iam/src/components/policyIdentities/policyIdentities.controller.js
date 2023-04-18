@@ -1,5 +1,14 @@
-import { decodeUrn, encodeUrn } from '@iam/resolves';
-import { URN_VERSION, ENTITY } from '@iam/constants';
+import {
+  decodeUrn,
+  encodeUrn,
+  alertResolve as alert,
+  goBackResolve as goBack,
+  goToResolve as goTo,
+  onboardingGuidesResolve as onboardingGuides,
+  policyParamResolve as policy,
+  reloadResolve as reload,
+} from '@iam/resolves';
+import { ACCOUNT_TYPE, ENTITY, URN_VERSION } from '@iam/constants';
 
 export default class PolicyIdentitiesController {
   /* @ngInject */
@@ -16,14 +25,38 @@ export default class PolicyIdentitiesController {
     this.IAMRoutes = IAMRoutes;
     this.IdentityService = IdentityService;
     this.PolicyService = PolicyService;
-    this.region = coreConfig.getRegion();
-    this.user = coreConfig.getUser();
+    this.coreConfig = coreConfig;
+  }
+
+  get modelIdentityUrn() {
+    const { model, suggestion, coreConfig } = this;
+    const { nichandle } = coreConfig.getUser();
+    const region = coreConfig.getRegion();
+    return encodeUrn({
+      version: URN_VERSION,
+      region: region.toUpperCase(),
+      entity: ENTITY.IDENTITY,
+      components: suggestion
+        ? [suggestion.accountType, `${nichandle}/${suggestion.userName}`]
+        : [ACCOUNT_TYPE.ACCOUNT, model],
+    });
+  }
+
+  get translations() {
+    const pfx = 'iam_policy_identities';
+    const { instant: $t } = this.$translate;
+    return {
+      errorEdit: (message) => $t(`${pfx}_error_edit_identities`, { message }),
+      errorInit: (message) => $t(`${pfx}_error_init`, { message }),
+      successEdit: $t(`${pfx}_success_edit_identities`),
+      successSubmit: $t(`${pfx}_success_submit`),
+    };
   }
 
   $onInit() {
     this.loading = true;
-
-    this.identities = this.policy.identities
+    this.guides = this[onboardingGuides];
+    this.chips = this[policy].identities
       .map(decodeUrn)
       .map((urn) => ({ title: [...urn.components].pop(), urn }));
 
@@ -33,81 +66,58 @@ export default class PolicyIdentitiesController {
         groups: this.IdentityService.getGroups(),
       })
       .then(({ users, groups }) => {
-        this.userList = [
-          ...users.map((user) => ({ accountType: 'user', userName: user })),
+        this.suggestions = [
+          ...users.map((user) => ({
+            accountType: ACCOUNT_TYPE.USER,
+            userName: user,
+          })),
           ...groups.map((group) => ({
-            accountType: 'group',
+            accountType: ACCOUNT_TYPE.GROUP,
             userName: group,
           })),
         ];
       })
-      .catch((error) => {
-        const { message } = error.data ?? {};
-        this.alert.error('iam_policy_identities_error_load_users', { message });
-      })
+      .catch((error) =>
+        this[alert].error(this.translations.errorInit(error.data?.message)),
+      )
       .finally(() => {
         this.loading = false;
       });
   }
 
-  goToDeleteIdentity(identity) {
-    return this.goTo({
+  deleteIdentity(identity) {
+    return this[goTo]({
       name: this.IAMRoutes.DELETE_IDENTITY,
       params: { identity },
     });
   }
 
-  onUsersFieldKeypress(event) {
+  editIdentities() {
+    const { id, identities } = this[policy];
+    const newIdentities = [...identities, this.modelIdentityUrn];
+    const params = { [policy]: id };
+
+    return this.PolicyService.editIdentities(id, newIdentities)
+      .then(() =>
+        this[reload]({ success: this.translations.successEdit, params }),
+      )
+      .catch((error) =>
+        this[reload]({
+          error: this.translations.errorEdit(error.data?.message),
+          params,
+        }),
+      );
+  }
+
+  onIdentityKeypress(event) {
     if (event.key !== 'Enter') {
       this.suggestion = null;
     }
   }
 
-  get newUserIdentityUrn() {
-    const { newUser, region, suggestion, user } = this;
-    return encodeUrn({
-      version: URN_VERSION,
-      region: region.toUpperCase(),
-      entity: ENTITY.IDENTITY,
-      components: suggestion
-        ? [suggestion.accountType, `${user.nichandle}/${suggestion.userName}`]
-        : ['account', newUser],
-    });
-  }
-
-  editIdentitites() {
-    return this.PolicyService.editIdentities(this.policy.id, [
-      ...this.policy.identities,
-      this.newUserIdentityUrn,
-    ])
-      .then(() => {
-        return this.goTo({
-          name: '.',
-          params: { policy: this.policy.id },
-          success: this.$translate.instant(
-            'iam_policy_identities_add_identity_success',
-          ),
-          reload: true,
-        });
-      })
-      .catch((e) => {
-        return this.goTo({
-          name: '.',
-          params: { policy: this.policy.id },
-          error: this.$translate.instant(
-            'iam_policy_identities_add_identity_error',
-            { message: e?.data?.message },
-          ),
-          reload: true,
-        });
-      });
-  }
-
   submit() {
-    this.goBack({
-      success: this.$translate.instant(
-        'iam_policy_identities_submit_identity_success',
-      ),
+    this[goBack]({
+      success: this.translations.successSubmit,
       reload: true,
     });
   }

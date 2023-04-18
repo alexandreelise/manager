@@ -1,11 +1,11 @@
-import { asBindings } from '@iam/resolves';
-
-import resolves from './onboarding.resolves';
+import {
+  onboardingGuidesResolve as onboardingGuides,
+  usersManagementLinkResolve as usersManagementLink,
+} from '@iam/resolves';
 import template from './onboarding.template.html';
 
 export default {
-  bindings: {
-    ...asBindings(resolves),
-  },
+  name: 'iamOnboarding',
+  resolves: [onboardingGuides, usersManagementLink],
   template,
 };

@@ -1,3 +1,9 @@
+const ACCOUNT_TYPE = {
+  ACCOUNT: 'account',
+  GROUP: 'group',
+  USER: 'user',
+};
+
 const ALERT_ID = 'iam_alert';
 
 const API_ERROR = {
@@ -24,7 +30,6 @@ const ENTITY = {
   RESOURCE_GROUP: 'resourceGroup',
   RESOURCE_TYPE: 'resourceType',
 };
-const URN_VERSION = 1;
 
 const ENTITY_NAME_PATTERN = /^[a-zA-Z0-9-/_+]*$/;
 
@@ -71,9 +76,16 @@ GUIDE.IAM.DEFAULT = GUIDE.IAM.FR;
 GUIDE.USERS.DEFAULT = GUIDE.USERS.US;
 GUIDE.SAMLSSO.DEFAULT = GUIDE.SAMLSSO.US;
 
+const POLICY_NAME_PATTERN = /^[a-zA-Z0-9-/_+]*$/;
+
+const ROOTSCOPE_NS = 'IAM';
+
 const UNAVAILABLE_STATE_NAME = 'app.account.user';
 
+const URN_VERSION = 1;
+
 export {
+  ACCOUNT_TYPE,
   ALERT_ID,
   API_ERROR,
   DELETE_STATEMENT,
@@ -81,6 +93,8 @@ export {
   ENTITY_NAME_PATTERN,
   FEATURE,
   GUIDE,
+  POLICY_NAME_PATTERN,
+  ROOTSCOPE_NS,
   UNAVAILABLE_STATE_NAME,
   URN_VERSION,
 };

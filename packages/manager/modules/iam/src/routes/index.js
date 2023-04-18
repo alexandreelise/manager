@@ -1,7 +1,13 @@
 import angular from 'angular';
 import { snakeCase } from 'lodash-es';
 
-import resolves from '@iam/resolves';
+import constants, { ROOTSCOPE_NS } from '@iam/constants';
+import components from '@iam/components';
+import resolves, {
+  asParams,
+  asResolve,
+  noBreadcrumbResolve as noBreadcrumb,
+} from '@iam/resolves';
 
 import rootRoute from './root.route';
 
@@ -14,7 +20,8 @@ const getStateName = (...parts) => parts.filter(Boolean).join('.');
 
 /**
  * Set where all the keys represent the last state name part (e.g. after the last dot) of the route
- * in upper case and all the values are the full state name (e.g. with the dots) of the route
+ * in snake upper case and all the values are the full state name (e.g. with the dots) of the route
+ * based on where the routes are placed in the route tree
  *
  * for instance:
  *
@@ -29,10 +36,10 @@ const getStateName = (...parts) => parts.filter(Boolean).join('.');
  */
 const ROUTES = (() => {
   const recursiveROUTES = (routes, parentName) =>
-    routes.reduce((constants, { route: { name }, children = [] }) => {
+    routes.reduce((routeConstants, { route: { name }, children = [] }) => {
       const stateName = getStateName(parentName, name);
       return {
-        ...constants,
+        ...routeConstants,
         ...recursiveROUTES(children, stateName),
         [snakeCase(name.split('.').pop()).toUpperCase()]: stateName,
       };
@@ -42,13 +49,33 @@ const ROUTES = (() => {
 
 /**
  * Declare all the routes onto the given StateProvider instance using its state method
+ * @param {Injector} $injector
  * @param {StateProvider} $stateProvider
  */
-const declareRoutes = /* @ngInject */ ($stateProvider) => {
+const declareRoutes = /* @ngInject */ ($injector, $stateProvider) => {
   const recursiveDeclareRoutes = (routes, parentName) => {
-    routes.forEach(({ route: { name, state }, children = [] }) => {
+    routes.forEach(({ route, children = [] }) => {
+      const {
+        breadcrumb,
+        component,
+        name,
+        params,
+        resolves: routeResolves,
+        ...stateParams
+      } = route;
       const stateName = getStateName(parentName, name);
-      $stateProvider.state(stateName, state({ $stateProvider, ROUTES }));
+
+      $stateProvider.state(stateName, {
+        ...stateParams,
+        ...(component && { component: component.name }),
+        ...(params && { params: asParams(params) }),
+        resolve: asResolve([
+          ...(component?.resolves || []),
+          ...(resolves || []),
+          breadcrumb ?? noBreadcrumb,
+        ]),
+      });
+
       recursiveDeclareRoutes(children, stateName);
     });
   };
@@ -60,14 +87,16 @@ const declareRoutes = /* @ngInject */ ($stateProvider) => {
  * @param {RootScope} $rootScope
  */
 const assignROUTES = /* @ngInject */ ($rootScope) =>
-  Object.assign($rootScope, { IAM: { ...$rootScope.IAM, ROUTES } });
+  Object.assign($rootScope, {
+    [ROOTSCOPE_NS]: { ...$rootScope[ROOTSCOPE_NS], ROUTES },
+  });
 
 const moduleName = 'ovhManagerIAMRoutes';
 
 angular
-  .module(moduleName, [resolves])
-  .config(declareRoutes)
+  .module(moduleName, [components, constants, resolves])
   .constant('IAMRoutes', ROUTES)
+  .config(declareRoutes)
   .run(assignROUTES)
   .run(/* @ngTranslationsInject:json ./translations */);
 

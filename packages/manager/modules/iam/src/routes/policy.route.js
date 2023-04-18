@@ -1,20 +1,10 @@
-import { policy as policyComponent } from '@iam/components';
-import { asResolve, noBreadcrumbResolve } from '@iam/resolves';
-
-const name = 'policy';
-const resolves = [noBreadcrumbResolve];
-
-const state = ({ ROUTES }) => ({
-  url: '/policy',
-  component: policyComponent.name,
-  redirectTo: ROUTES.POLICIES,
-  resolve: {
-    ...asResolve(policyComponent.resolves),
-    ...asResolve(resolves),
-  },
-});
+import { policy as component } from '@iam/components';
 
 export default {
-  name,
-  state,
+  component,
+  name: 'policy',
+  redirectTo: (transition) => {
+    return transition.injector().get('IAMRoutes').POLICIES;
+  },
+  url: '/policy',
 };

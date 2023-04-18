@@ -1,3 +1,4 @@
+import { resourceGroupParamResolve as resourceGroup } from '@iam/resolves';
 import AbstractCursorDatagridController from '../cursorDatagrid/cursorDatagrid.controller';
 
 export default class ResourceGroupsController extends AbstractCursorDatagridController {
@@ -26,15 +27,6 @@ export default class ResourceGroupsController extends AbstractCursorDatagridCont
   }
 
   /**
-   * Go to resourceGroup edition
-   * @param {string} id The resourceGroup id
-   * @returns {Promise}
-   */
-  editResourceGroup({ id }) {
-    this.alert.error(`editResourceGroup not implemented [id=${id}]`);
-  }
-
-  /**
    * Go to resourceGroup deletion
    * @param {string} id The resourceGroup id
    * @returns {Promise}
@@ -42,7 +34,16 @@ export default class ResourceGroupsController extends AbstractCursorDatagridCont
   deleteResourceGroup({ id }) {
     this.goTo({
       name: this.IAMRoutes.DELETE_RESOURCE_GROUP,
-      params: { resourceGroup: id },
+      params: { ...this.params, [resourceGroup]: id },
     });
+  }
+
+  /**
+   * Go to resourceGroup edition
+   * @param {string} id The resourceGroup id
+   * @returns {Promise}
+   */
+  editResourceGroup({ id }) {
+    this.alert.error(`editResourceGroup not implemented [id=${id}]`);
   }
 }

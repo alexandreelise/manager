@@ -14,7 +14,6 @@ import {
  * @returns {{
  *   success: (key: string, values?: { [x: string]: any }) => void
  *   error: (key, values?: { [x: string]: any }) => void
- *   apiError: (key, object, values?: { [x: string]: any }) => void
  * }}
  */
 const alertResolve = /* @ngInject */ ($translate, Alerter) => ({
@@ -32,50 +31,44 @@ alertResolve.key = 'alert';
  * A polymorphic DTO
  * The type of the entity it carries can be identified by its "type" property
  * To add a new type :
- * 1. Add a new entity type to the ENTITY constant
- * 2. Add the corresponding resolve to the "resolves" array
- * 3. Inject the corresponding resolve into the arguments
- * 4. Make the function return the resolved data with the "data" property
- * and the entity type with the "type" property
+ *   1. Add a new entity type to the ENTITY constant
+ *   2. Add the corresponding resolve to the "resolves" array
+ *   3. Inject the corresponding resolve into the arguments
+ *   4. Make the function return the resolved data with the "data" property
+ *      and the entity type with the "type" property
  * @returns {{
  *   data: Object,
  *   type: string
  * }|null}
  */
 const entityResolve = /* @ngInject */ (policy, identity, resourceGroup) => {
-  let entity = null;
   if (identity && policy) {
-    const [, userName] = identity.components;
-    entity = {
-      data: { policy, identity, name: userName },
+    return {
+      data: { policy, identity },
       type: ENTITY.IDENTITY,
     };
-  } else if (policy) {
-    entity = { data: policy, type: ENTITY.POLICY };
-  } else if (resourceGroup) {
-    entity = { data: resourceGroup, type: ENTITY.RESOURCE_GROUP };
   }
-  return entity;
+  if (policy) {
+    return {
+      data: policy,
+      type: ENTITY.POLICY,
+    };
+  }
+  if (resourceGroup) {
+    return {
+      data: resourceGroup,
+      type: ENTITY.RESOURCE_GROUP,
+    };
+  }
+  return null;
 };
 
 entityResolve.key = 'entity';
 entityResolve.resolves = [
-  policyParamResolve,
   identityParamResolve,
+  policyParamResolve,
   resourceGroupParamResolve,
 ];
-
-// ---------------------------------------------------------------------------------------------------- //
-
-/**
- * Whether the entity requires a statement
- * @returns {boolean}
- */
-const statementResolve = /* @ngInject */ (entity) =>
-  [ENTITY.POLICY].includes(entity.type);
-
-statementResolve.key = 'statement';
-statementResolve.resolves = [entityResolve];
 
 // ---------------------------------------------------------------------------------------------------- //
 
@@ -95,7 +88,8 @@ featuresResolve.key = 'features';
 /**
  * Go to a specific IAM state
  * @param {string} name The state.go name
- * @param {string} params The state.go params
+ * @param {string|boolean} params The state.go params. If true is passed as params,
+ *                                then all the current params are passed
  * @param {boolean} reload The state.go reload option
  * @param {string | { key: string, values: { [x: string]: any }}} success The success message to display
  * @param {string | { key: string, values: { [x: string]: any }}} error The error message to display
@@ -107,10 +101,11 @@ const goToResolve = /* @ngInject */ ($state, alert) => ({
   success,
   error,
 }) => {
+  const stateParams = params === true ? $state.current.params : params;
   const options = {
     ...(typeof reload !== 'undefined' && { reload }),
   };
-  return $state.go(name, params, options).then((result) => {
+  return $state.go(name, stateParams, options).then((result) => {
     if (success) {
       alert.success(success.key || success, success.values);
     } else if (error) {
@@ -155,12 +150,42 @@ usersManagementLinkResolve.key = 'usersManagementLink';
 
 // ---------------------------------------------------------------------------------------------------- //
 
+/**
+ * Reload the current state
+ * @param {string} params The state.go params
+ * @param {string | { key: string, values: { [x: string]: any }}} success The success message to display
+ * @param {string | { key: string, values: { [x: string]: any }}} error The error message to display
+ */
+const reloadResolve = /* @ngInject */ (goTo) => ({
+  params,
+  success,
+  error,
+} = {}) => goTo({ params, reload: true, success, error, name: '.' });
+
+reloadResolve.key = 'reload';
+reloadResolve.resolves = [goToResolve];
+
+// ---------------------------------------------------------------------------------------------------- //
+
+/**
+ * Whether the entity requires a statement
+ * @returns {boolean}
+ */
+const statementResolve = /* @ngInject */ (entity) =>
+  [ENTITY.POLICY].includes(entity.type);
+
+statementResolve.key = 'statement';
+statementResolve.resolves = [entityResolve];
+
+// ---------------------------------------------------------------------------------------------------- //
+
 export {
   alertResolve,
   entityResolve,
   featuresResolve,
   goBackResolve,
   goToResolve,
+  reloadResolve,
   statementResolve,
   usersManagementLinkResolve,
 };

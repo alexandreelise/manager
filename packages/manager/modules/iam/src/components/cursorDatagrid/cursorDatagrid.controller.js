@@ -1,4 +1,7 @@
-import { areCursorsEquals, cursorsParamResolve } from '@iam/resolves';
+import {
+  areCursorsEquals,
+  cursorsParamResolve as cursorsParam,
+} from '@iam/resolves';
 
 /**
  * This class is meant to be extended by the datagrid controllers
@@ -24,8 +27,8 @@ export default class AbstractCursorDatagridController {
   }
 
   $onInit() {
-    // Copy the value of the cursors resolve to break the reference
-    this.cursors = { ...this[cursorsParamResolve.key] };
+    // Copy the value of the cursorsParam resolve to break the reference
+    this.cursors = { ...this[cursorsParam] };
   }
 
   /**
@@ -34,7 +37,7 @@ export default class AbstractCursorDatagridController {
    * we can detect that the URL has changed without reloading the entire state
    * @param {Object} params
    */
-  uiOnParamsChanged({ [cursorsParamResolve.key]: cursors }) {
+  uiOnParamsChanged({ [cursorsParam]: cursors }) {
     if (cursors && !areCursorsEquals(this.cursors, cursors)) {
       this.cursors = { ...cursors };
       this.ouiDatagridService.refresh(this.datagridId, true);
@@ -48,7 +51,7 @@ export default class AbstractCursorDatagridController {
   get params() {
     return {
       // Pass a copy to break the reference
-      [cursorsParamResolve.key]: { ...this.cursors },
+      [cursorsParam]: { ...this.cursors },
     };
   }
 
@@ -70,15 +73,16 @@ export default class AbstractCursorDatagridController {
   getItems({ offset, pageSize }) {
     const total = pageSize + offset;
     const index = Math.floor(total / pageSize);
-
-    return this.createItemsPromise({
+    const promise = this.createItemsPromise({
+      cursor: this.cursors[index],
       offset,
       pageSize,
-      cursor: this.cursors[index],
-    })
+    });
+
+    return promise
       .then(({ data, cursor: { next, prev, error } }) => {
         if (error) {
-          this.cursors = cursorsParamResolve.declaration.value();
+          this.cursors = cursorsParam.declaration.value();
           this.alert.error('iam_cursor_datagrid_error_cursor');
           return this.getItems({ offset: 1, pageSize });
         }
@@ -104,10 +108,13 @@ export default class AbstractCursorDatagridController {
 
   /**
    * Create the items promise
+   * @param {string=} cursor The current cursor id, if any
+   * @param {number=} offset The current items offset from the first page
+   * @param {number=} pageSize The current page size (number of items)
    * @abstract
    * @returns {Promise}
    */
-  createItemsPromise() { // eslint-disable-line
+  createItemsPromise({ cursor, offset, pageSize }) { // eslint-disable-line
     throw new Error(
       'CursorDatagridController#createItemsPromise must be overriden',
     );

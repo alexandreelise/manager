@@ -1,13 +1,13 @@
 import createPolicy from './createPolicy.route';
-import deletePolicy from './deletePolicy.route';
 import deleteIdentity from './deleteIdentity.route';
+import deletePolicy from './deletePolicy.route';
+import deleteResourceGroup from './deleteResourceGroup.route';
 import iam from './iam.route';
-import policyIdentities from './policyIdentities.route';
+import onboarding from './onboarding.route';
 import policies from './policies.route';
 import policy from './policy.route';
+import policyIdentities from './policyIdentities.route';
 import resourceGroups from './resourceGroups.route';
-import deleteResourceGroup from './deleteResourceGroup.route';
-import onboarding from './onboarding.route';
 
 export default [
   {

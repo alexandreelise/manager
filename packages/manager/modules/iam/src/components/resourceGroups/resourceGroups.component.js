@@ -1,13 +1,12 @@
-import { asBindings } from '@iam/resolves';
+import { alertResolve as alert, goToResolve as goTo } from '@iam/resolves';
 
 import controller from './resourceGroups.controller';
-import resolves from './resourceGroups.resolves';
 import template from './resourceGroups.template.html';
+import cursorDatagrid from '../cursorDatagrid/cursorDatagrid.component';
 
 export default {
-  bindings: {
-    ...asBindings(resolves),
-  },
+  name: 'iamResourceGroups',
+  resolves: [...cursorDatagrid.resolves, alert, goTo],
   controller,
   template,
 };

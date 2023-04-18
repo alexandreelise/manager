@@ -1,16 +1,15 @@
 import { API_ERROR } from '@iam/constants';
 
 export default class Apiv2Service {
-  /* @ngInject */
-  constructor($http, $translate) {
+  constructor($http, $translate, baseUrl) {
     this.$http = $http;
     this.$translate = $translate;
 
     /**
-     * Base URL of the project in APIv2
+     * The base URL of the v2 API
      * @type {string}
      */
-    this.baseURL = 'iam';
+    this.baseUrl = baseUrl;
   }
 
   /**

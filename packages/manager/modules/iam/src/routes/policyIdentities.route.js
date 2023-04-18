@@ -1,24 +1,13 @@
-import { policyIdentities as policyIdentitiesComponent } from '@iam/components';
+import { policyIdentities as component } from '@iam/components';
 import {
-  asPath,
-  asResolve,
-  policyParamResolve,
-  policyIdentitiesBreadcrumbResolve,
+  policyIdentitiesBreadcrumbResolve as breadcrumb,
+  policyParamResolve as policy,
 } from '@iam/resolves';
 
-const name = 'policyIdentities';
-const resolves = [policyParamResolve, policyIdentitiesBreadcrumbResolve];
-
-const state = () => ({
-  url: `/identity/${asPath(policyParamResolve)}`,
-  component: policyIdentitiesComponent.name,
-  resolve: {
-    ...asResolve(policyIdentitiesComponent.resolves),
-    ...asResolve(resolves),
-  },
-});
-
 export default {
-  name,
-  state,
+  breadcrumb,
+  component,
+  name: 'policyIdentities',
+  resolves: [policy],
+  url: `/identity/${policy.toTypeString()}`,
 };

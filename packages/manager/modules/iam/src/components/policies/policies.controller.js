@@ -1,4 +1,4 @@
-import { policyParamResolve } from '@iam/resolves';
+import { policyParamResolve as policy } from '@iam/resolves';
 import AbstractCursorDatagridController from '../cursorDatagrid/cursorDatagrid.controller';
 
 export default class PoliciesController extends AbstractCursorDatagridController {
@@ -27,6 +27,18 @@ export default class PoliciesController extends AbstractCursorDatagridController
   }
 
   /**
+   * Go to policy deletion
+   * @param {string} id The policy id
+   * @returns {Promise}
+   */
+  deletePolicy({ id }) {
+    return this.goTo({
+      name: this.IAMRoutes.DELETE_POLICY,
+      params: { ...this.params, [policy]: id },
+    });
+  }
+
+  /**
    * Go to policy's identities edition
    * @param {string} id The policy id
    * @returns {Promise}
@@ -34,7 +46,7 @@ export default class PoliciesController extends AbstractCursorDatagridController
   editIdentities({ id }) {
     return this.goTo({
       name: this.IAMRoutes.POLICY_IDENTITIES,
-      params: { policy: id },
+      params: { [policy]: id },
     });
   }
 
@@ -45,17 +57,5 @@ export default class PoliciesController extends AbstractCursorDatagridController
    */
   editPolicy({ id }) {
     this.alert.error(`editPolicy not implemented [id=${id}]`);
-  }
-
-  /**
-   * Go to policy deletion
-   * @param {string} id The policy id
-   * @returns {Promise}
-   */
-  deletePolicy({ id }) {
-    return this.goTo({
-      name: this.IAMRoutes.DELETE_POLICY,
-      params: { ...this.params, [policyParamResolve.key]: id },
-    });
   }
 }

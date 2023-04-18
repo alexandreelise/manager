@@ -1,4 +1,4 @@
-import { debounce } from 'lodash-es';
+import { debounce as lodashDebounce } from 'lodash-es';
 import './highlightText.styles.scss';
 
 /**
@@ -19,48 +19,50 @@ import './highlightText.styles.scss';
  * <div>My <span class="iam-highlight-text">super</span> text</div>
  */
 
-const defaultOptions = {
+const OPTIONS = {
   debounce: 400,
   minLength: 2,
 };
 
-export default () => ({
+const directive = () => ({
+  restrict: 'A',
   scope: {
     iamHighlightTextChange: '&?',
     iamHighlightTextOptions: '<?',
   },
-  link(scope, angularElement, attributes) {
+  link(scope, element, attributes) {
     const {
-      iamHighlightTextChange: onChange,
+      iamHighlightTextChange: change,
       iamHighlightTextOptions: options,
     } = scope;
-    const { debounce: debounceTime, minLength } = {
-      ...defaultOptions,
-      ...options,
-    };
-    const element = angularElement[0];
+    const { debounce, minLength } = { ...OPTIONS, ...options };
+    const nativeElement = element[0];
 
     scope.$watch(
-      () => attributes.iamHighlightText,
-      debounce((text) => {
-        const { innerText } = element;
+      () => attributes[directive.name],
+      lodashDebounce((text) => {
+        const { innerText } = nativeElement;
         const regExp = new RegExp(`(${text})`, 'gi');
 
         if (!text || text.length < minLength) {
-          element.innerHTML = innerText;
+          nativeElement.innerHTML = innerText;
           return;
         }
 
         if (regExp.test(innerText)) {
-          element.innerHTML = innerText.replace(
+          nativeElement.innerHTML = innerText.replace(
             regExp,
             '<span class="iam-highlight-text">$1</span>',
           );
-          if (onChange) {
-            onChange({ text });
+          if (change) {
+            change({ text });
           }
         }
-      }, debounceTime),
+      }, debounce),
     );
   },
 });
+
+directive.name = 'iamHighlightText';
+
+export default directive;

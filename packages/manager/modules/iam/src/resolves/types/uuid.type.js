@@ -8,7 +8,7 @@ const uuidPattern = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
  */
 const isUUID = (uuid) => uuidPattern.test(uuid);
 
-export { isUUID, uuidPattern, uuidType };
+export { uuidType };
 export default {
   is: isUUID,
   pattern: uuidPattern,

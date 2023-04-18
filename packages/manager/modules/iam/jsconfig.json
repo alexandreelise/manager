@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@iam/components": ["components"],
+      "@iam/constants": ["constants"],
+      "@iam/resolves": ["resolves"],
+      "@iam/routes": ["routes"],
+      "@iam/services": ["services"],
+    }
+  }
+}

@@ -1,13 +1,14 @@
-import { asBindings } from '@iam/resolves';
+import {
+  entityResolve as entity,
+  goBackResolve as goBack,
+} from '@iam/resolves';
 
 import controller from './deleteEntity.controller';
-import resolves from './deleteEntity.resolves';
 import template from './deleteEntity.template.html';
 
 export default {
-  bindings: {
-    ...asBindings(resolves),
-  },
+  name: 'iamDeleteEntity',
+  resolves: [entity, goBack],
   controller,
   template,
   transclude: true,
