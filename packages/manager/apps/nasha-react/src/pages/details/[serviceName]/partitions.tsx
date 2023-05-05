@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { getPartition } from '../../../api/nasha-react';
 import NotFound from '../../404';
 
@@ -9,12 +10,13 @@ function Partitions(props: { serviceName: string }) {
     ['partitions', { serviceName }],
     getPartition,
   );
+  const { t } = useTranslation('nasha-react/details/dashboard');
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <span>{t('nasha_dashboard_loading')}</span>;
   }
 
   if (isError) {
-    return NotFound;
+    return <NotFound />;
   }
 
   const count = data?.length;

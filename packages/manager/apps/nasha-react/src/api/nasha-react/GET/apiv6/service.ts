@@ -1,5 +1,6 @@
 import apiClient from '@ovh-ux/manager-core-api';
 import { QueryFunctionContext } from '@tanstack/react-query';
+import ServiceInfos from './types';
 
 async function services() {
   const response = await apiClient.v6.get('/dedicated/nasha');
@@ -21,7 +22,8 @@ async function serviceInfos({
   const response = await apiClient.v6.get(
     `/dedicated/nasha/${serviceName}/serviceInfos`,
   );
-  return response.data;
+
+  return response.data as ServiceInfos;
 }
 
 async function getPartition({
