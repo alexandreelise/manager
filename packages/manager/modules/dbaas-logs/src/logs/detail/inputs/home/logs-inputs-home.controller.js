@@ -12,6 +12,7 @@ export default class LogsInputsHomeCtrl {
     CucControllerHelper,
     LogsConstants,
     LogsInputsService,
+    LogsTokensService,
   ) {
     this.$state = $state;
     this.$stateParams = $stateParams;
@@ -21,6 +22,7 @@ export default class LogsInputsHomeCtrl {
     this.CucControllerHelper = CucControllerHelper;
     this.LogsConstants = LogsConstants;
     this.LogsInputsService = LogsInputsService;
+    this.LogsTokensService = LogsTokensService;
     this.initLoaders();
   }
 
@@ -160,6 +162,8 @@ export default class LogsInputsHomeCtrl {
         controllerAs: 'ctrl',
         resolve: {
           currentInput: () => input,
+          defaultCluster: () =>
+            this.LogsTokensService.getDefaultCluster(this.serviceName),
         },
       },
     });
