@@ -58,7 +58,7 @@ angular.module('App').controller(
       };
 
       const user = this.coreConfig.getUser();
-      this.Hosting.getCatalog(user.ovhSubsidiary).then((catalog) => {
+      this.Hosting.getPreprodCatalog(user.ovhSubsidiary).then((catalog) => {
         this.user = user;
         this.catalog = catalog;
         this.ovhSubsidiary = user.ovhSubsidiary;

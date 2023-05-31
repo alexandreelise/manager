@@ -15,7 +15,7 @@ export default class WebComponentsHostingDomainOffersController {
   constructor($translate, $filter) {
     this.$translate = $translate;
     const bytes = $filter('bytes');
-    const planCodeKey = 'legacyPlanCode'; // planCode
+    const planCodeKey = 'planCode'; // planCode
 
     this.NEW_OFFERS = {
       PERSO: {

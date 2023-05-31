@@ -122,7 +122,7 @@ export default /* @ngInject */ ($stateProvider) => {
         user: /* @ngInject */ (coreConfig) => coreConfig.getUser(),
 
         catalog: /* @ngInject */ (user, WebHostingOrder) => {
-          return WebHostingOrder.getCatalog(user.ovhSubsidiary);
+          return WebHostingOrder.getPreprodCatalog(user.ovhSubsidiary);
         },
       },
     })

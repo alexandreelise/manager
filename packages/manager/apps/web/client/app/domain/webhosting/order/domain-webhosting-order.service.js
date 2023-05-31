@@ -176,6 +176,14 @@ export default class {
       .then(({ data }) => data);
   }
 
+  getPreprodCatalog(ovhSubsidiary) {
+    return this.$http
+      .get(
+        `/order/catalog/public/webhostingPreprod?ovhSubsidiary=${ovhSubsidiary}`,
+      )
+      .then(({ data }) => data);
+  }
+
   static mapDnsZoneValue(dnsConfiguration) {
     if (!dnsConfiguration) {
       return {

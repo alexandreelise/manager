@@ -828,6 +828,15 @@ import union from 'lodash/union';
           )
           .then(({ data }) => data);
       }
+
+      // TODO :: only used to test preprod catalog
+      getPreprodCatalog(ovhSubsidiary) {
+        return this.$http
+          .get(
+            `/order/catalog/public/webhostingPreprod?ovhSubsidiary=${ovhSubsidiary}`,
+          )
+          .then(({ data }) => data);
+      }
     },
   );
 }
