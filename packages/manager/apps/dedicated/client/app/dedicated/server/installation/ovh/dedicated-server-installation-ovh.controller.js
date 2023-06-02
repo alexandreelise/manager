@@ -555,7 +555,7 @@ angular
           }
         }
 
-        return realRemainingSize;
+        return Math.floor(realRemainingSize);
       }
 
       function showPartition() {
