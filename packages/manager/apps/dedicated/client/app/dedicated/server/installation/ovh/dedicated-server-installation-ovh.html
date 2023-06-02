@@ -761,6 +761,7 @@
                                     </span>
                                     <input
                                         type="text"
+                                        class="form-control"
                                         data-ng-show="isSetPartition(partition) && (partition.typePartition == constants.warningLV || partition.fileSystem == constants.warningZFS) && !errorInst.typeLvSwap"
                                         data-ng-model="partition.volumeName"
                                         data-ng-required="partition.typePartition == constants.warningLV"
