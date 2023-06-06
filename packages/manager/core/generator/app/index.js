@@ -84,6 +84,12 @@ export default (plop) => {
           );
         },
       },
+      {
+        type: 'input',
+        name: 'pimID',
+        message: 'What is the PIM ID?',
+        validate: (description) => description.length > 1,
+      },
     ],
     actions: ({ apiV6Endpoints, templates, appName }) => {
       const apiFiles = createApiQueryFilesActions(apiV6Endpoints, appDirectory);
