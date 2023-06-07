@@ -19,7 +19,7 @@ export default class {
 
   orderQuota(projectId, cartId, serviceOption) {
     const renewPrice = serviceOption.prices?.find((price) =>
-      price.capacities.includes('renew'),
+      price.capacities.includes('installation'),
     );
     return this.$http
       .post(`/order/cartServiceOption/cloud/${projectId}`, {
