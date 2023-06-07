@@ -88,7 +88,7 @@ export default (plop) => {
         type: 'input',
         name: 'pimID',
         message: 'What is the PIM ID?',
-        validate: (description) => description.length > 1,
+        default: () => `No PIM ID`,
       },
     ],
     actions: ({ apiV6Endpoints, templates, appName }) => {

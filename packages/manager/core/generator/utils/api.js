@@ -1,15 +1,5 @@
 import axios from 'axios';
 /**
- * @returns the list of products
- */
-export const getProductsList = async () => {
-  const response = await axios.get(
-    'https://api.ovh.com/1.0/products/list.json',
-  );
-  return response.data;
-};
-
-/**
  * @returns the list of API v6 services endpoints
  */
 export const getApiPaths = async () => {
@@ -27,6 +17,5 @@ export const getApiServiceOperations = async (apiPath) => {
 
 export default {
   getApiPaths,
-  getProductsList,
   getApiServiceOperations,
 };

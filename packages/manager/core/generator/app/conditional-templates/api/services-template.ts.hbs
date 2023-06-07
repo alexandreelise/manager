@@ -33,3 +33,19 @@ export const {{this.functionName}} = async ({{#if this.params}}params: {{pascalC
   return queryClient.fetchQuery({{this.functionName}}QueryKey{{#if this.urlParams}}(params){{/if}}, fetchData);
 };
 {{/each}}
+
+{{#if this.pimID}}
+export const getPIMServiceQueryKey = [`/products/list`];
+
+/**
+ * Using the PIM ID `{{this.pimID}}` to search in PIM data model
+ */
+export const getPIMService = async (): Promise<string[]> => {
+  const fetchData = async () => {
+    const response = await apiClient.v6.get('/products/list');
+    return response.data;
+  };
+
+  return queryClient.fetchQuery(getPIMServiceQueryKey, fetchData);
+};
+{{/if}}
