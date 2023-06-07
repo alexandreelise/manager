@@ -225,6 +225,10 @@ export default class PciInstancesAddController {
     return this.model.image?.type?.includes('linux');
   }
 
+  isWindowsImageType() {
+    return this.model.image?.type?.includes('windows');
+  }
+
   getBackupPrice() {
     return this.PciProjectsProjectInstanceService.getSnapshotMonthlyPrice(
       this.projectId,
@@ -296,6 +300,10 @@ export default class PciInstancesAddController {
       isFlex,
     );
     this.generateInstanceName();
+  }
+
+  hasPrivateNetwork() {
+    return !!this.selectedPrivateNetwork.id;
   }
 
   isRegionAvailable(datacenter) {
